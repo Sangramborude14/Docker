@@ -1,17 +1,6 @@
-# Base Image
-FROM node:18-alpine
+# Question 1 : Python 
 
-# Working Directory
+FROM python:3.10-slim
 WORKDIR /app
-
-#Copy files from computer into container
-COPY . .
-
-#Install project dependancies
-RUN npm install
-
-# Port the container listens on
-EXPOSE 3000
-
-# Define the command to run the app when the container start
-CMD ["node", "server.js"]
+COPY analyze.py . # from analyze.py into ,., current directory
+CMD ["python","analyze.py"]

@@ -12,3 +12,4 @@ services:
     image: mongo:latest # download the latest mongoDb image from docker hub
     ports:
       - "27017:27017"
+  
