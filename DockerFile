@@ -1,27 +1,24 @@
-#Multi Stage Build
+#===============================
+# Stage 1: Build the TypeScript Code
+#===============================
 
-# Stage 1: The build environment
-
-FROM golang:1.21-alpine AS builder
-WORKDIR /src
-
-# Copy dependancy files first
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copy rest of source code
-COPY . .
-
-#Compile the binary file into a single, highly binary file named 'server'
-RUN CGO_ENABLED=0 GOOS=linux go build -o server
-
-# Stage 2: The Production Environment
-
-FROM alpine:latest
+FROM node:18-alpine AS builder
 WORKDIR /app
-#Pulls only the finished binary from builder
-COPY --from=builder /src/server 
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-EXPOSE 8080
+#===============================
+# Stage 2: The Production Environment
+#===============================
 
-CMD [ "./server" ]
+FROM node:18-alpine
+WORKDIR /app
+
+#only install production dependancies
+COPY package.json package-lock.json ./
+RUN npm install --only=production
+COPY --from=builder /app/dist ./
+EXPOSE 3000
+CMD [ "node","server.js" ]
