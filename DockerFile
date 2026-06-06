@@ -1,6 +1,0 @@
-# Question 1 : Python 
-
-FROM python:3.10-slim
-WORKDIR /app
-COPY analyze.py . # from analyze.py into ,., current directory
-CMD ["python","analyze.py"]
