@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web-app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database # ensures the database starts before the web-app does
+  
+  database:
+    image: mongo:latest # download the latest mongoDb image from docker hub
+    ports:
+      - "27017:27017"
