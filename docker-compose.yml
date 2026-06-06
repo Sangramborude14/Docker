@@ -1,40 +1,40 @@
 version: '3.8'
 
 services:
-# Frontend
-# Backend
-# Database
 
-  frontend:
+  app:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-    - "80:80"
-    restart: always
-
-  backend:
-    build: 
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    env_file:
-      - .env
-    volumes:
-      - backend_uploads:/app/uploads
+    environment:
+      - DATABASE_URL=postgresql://user_admin:super_secret_password@postgres_db:5432/my_app_db?schema=public
+      - NEXT_PUBLIC_SOCKET_URL=http://localhost:3000
     depends_on:
-      - database
+      postgres_db:
+          condition: service_healthy
     restart: always
 
-  database:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - db_data:/var/lib/postgresql/data  # keeps your data safe even if the container is deleted
-    restart: always
+  postgres_db:
+  image: postgres:15-alpine
+  environmnet:
+    - POSTGRES_USER=user_admin
+    - POSTGRES_PASSWORD=super_secret_password
+    - POSTGRES_DB=my_app_db
+  ports:
+    - "5432:5432"
+  volumes:
+    - pg_data:/var/lib/postgresql/data
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U user_admin -d my_app_db"]
+    interval: 5s
+    timeout: 5s
+    retries: 5
+  restart: always
 
 volumes:
-  db_data:
-  backend_uploads:
+  pg_data:
+
+
+      
