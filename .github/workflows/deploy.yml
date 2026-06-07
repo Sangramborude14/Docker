@@ -1,0 +1,22 @@
+name: Deploy to AWS Ubuntu Server
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.AWS_HOST}}
+          username: ubuntu
+          key: ${{secrets.AWS_PRIVATE_KEY}}
+          script:
+            cd /home/ubuntu/my-app/coolnotes
+            git pull
+            docker compose up -d --build
+
